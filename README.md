@@ -4,7 +4,7 @@
   visit [https://segment.com/docs/libraries/go](https://segment.com/docs/libraries/go/) or view the [godocs](http://godoc.org/github.com/segmentio/objects-go).
 
 ## Description
-Segment’s Objects API allows you to send business objects relevant to your business right to Redshift and other Segment supported data warehouses.
+Segment’s Objects API allows you to send stateful business objects right to Redshift and other Segment supported data warehouses. These objects can be anything that is relevant to your business: product catalogs, inventories, storefronts, etc.
 
 The Objects API lets you `set` custom objects in your own data warehouse.
 
