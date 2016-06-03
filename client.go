@@ -132,6 +132,9 @@ func (c *Client) Close() {
 		t.Val.Exit <- struct{}{}
 		close(t.Val.Exit)
 	}
+
+	c.wg.Wait()
+	c.semaphore.Wait()
 }
 
 func (c *Client) Set(v *Object) {
