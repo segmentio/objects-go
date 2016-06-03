@@ -122,7 +122,7 @@ func (c *Client) buffer(b *buffer) {
 }
 
 func (c *Client) Close() {
-	if atomic.LoadInt64(&c.closed) > 0 {
+	if atomic.LoadInt64(&c.closed) == 1 {
 		return
 	}
 	atomic.AddInt64(&c.closed, 1)
