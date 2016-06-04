@@ -1,5 +1,10 @@
 package objects
 
+import (
+	"bytes"
+	"encoding/json"
+)
+
 type buffer struct {
 	Channel         chan *Object
 	Exit            chan struct{}
@@ -34,4 +39,11 @@ func (b *buffer) count() int {
 func (b *buffer) reset() {
 	b.buf = [][]byte{}
 	b.currentByteSize = 0
+}
+
+func (b *buffer) marshalArray() json.RawMessage {
+	rm := bytes.Join(b.buf, []byte{','})
+	rm = append([]byte{'['}, rm...)
+	rm = append(rm, ']')
+	return json.RawMessage(rm)
 }

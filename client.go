@@ -66,9 +66,7 @@ func (c *Client) flush(b *buffer) {
 		return
 	}
 
-	rm := bytes.Join(b.buf, []byte{','})
-	rm = append([]byte{'['}, rm...)
-	rm = append(rm, ']')
+	rm := b.marshalArray()
 	c.semaphore.Run(func() {
 		batchRequest := &batch{
 			Collection: b.collection,
