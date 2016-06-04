@@ -24,7 +24,7 @@ Client.Set(*objects.Object{
   ID: "room1000",
   Collection: "rooms"
   Properties: map[string]interface{}{
-    "owner": "Calvin French-Owen",
+    "owner": "Calvin",
     "public_listing": true,
 })
 ```
@@ -38,7 +38,7 @@ select id, name, location, review_count, owner, public_listing from hotel.rooms
 ..which will return…
 
 ```CSV
-'room1000' | 'Charming Beach Room Facing Ocean' | 'Lihue, HI' | 47 | "Calvin French-Owen" | true
+'room1000' | 'Charming Beach Room Facing Ocean' | 'Lihue, HI' | 47 | "Calvin" | true
 ```
 
 > All objects will be flattened using the `go-tableize` library. Objects API doesn't allow nested objects, empty objects, and only allows strings, numeric types or booleans as values.
