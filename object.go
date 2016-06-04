@@ -1,7 +1,7 @@
 package objects
 
 type Object struct {
-	Collection string                 `json:"-"`
-	ID         string                 `json:"id"`
-	Properties map[string]interface{} `json:"properties"`
+	Collection string                 `json:"-" validate:"nonzero"`
+	ID         string                 `json:"id" validate:"nonzero"`
+	Properties map[string]interface{} `json:"properties" validate:"min=1"`
 }

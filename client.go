@@ -3,6 +3,7 @@ package objects
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,6 +11,8 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"gopkg.in/validator.v2"
 
 	"github.com/cenkalti/backoff"
 	"github.com/segmentio/go-tableize"
@@ -22,6 +25,10 @@ const (
 
 	// Endpoint for Segment Objects API.
 	DefaultBaseEndpoint = "https://objects.segment.com"
+)
+
+var (
+	ErrClientClosed = errors.New("Client is closed")
 )
 
 type Client struct {
@@ -129,17 +136,24 @@ func (c *Client) Close() {
 		close(t.Val.Channel)
 		t.Val.Exit <- struct{}{}
 		close(t.Val.Exit)
+		t.Val.reset()
 	}
 
 	c.wg.Wait()
 	c.semaphore.Wait()
 }
 
-func (c *Client) Set(v *Object) {
+func (c *Client) Set(v *Object) error {
 	if atomic.LoadInt64(&c.closed) == 1 {
-		return
+		return ErrClientClosed
 	}
+
+	if err := validator.Validate(v); err != nil {
+		return err
+	}
+
 	c.cmap.Fetch(v.Collection, c.fetchFunction).Channel <- v
+	return nil
 }
 
 func (c *Client) makeRequest(request *batch) {
