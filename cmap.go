@@ -20,7 +20,7 @@ type concurrentMapShared struct {
 }
 
 // Creates a new concurrent map.
-func NewConcurrentMap() concurrentMap {
+func newConcurrentMap() concurrentMap {
 	m := make(concurrentMap, shardCount)
 	for i := 0; i < shardCount; i++ {
 		m[i] = &concurrentMapShared{items: make(map[string]*buffer)}

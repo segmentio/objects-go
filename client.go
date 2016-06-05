@@ -53,7 +53,7 @@ func New(writeKey string) *Client {
 		Logger:           log.New(os.Stderr, "segment ", log.LstdFlags),
 		writeKey:         writeKey,
 		Client:           http.DefaultClient,
-		cmap:             NewConcurrentMap(),
+		cmap:             newConcurrentMap(),
 		MaxBatchBytes:    500 << 10,
 		MaxBatchCount:    100,
 		MaxBatchInterval: 10 * time.Second,
