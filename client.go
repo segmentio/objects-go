@@ -133,9 +133,9 @@ func (c *Client) Close() {
 	atomic.AddInt64(&c.closed, 1)
 
 	for t := range c.cmap.Iter() {
-		close(t.Val.Channel)
 		t.Val.Exit <- struct{}{}
 		close(t.Val.Exit)
+		close(t.Val.Channel)
 		t.Val.reset()
 	}
 
