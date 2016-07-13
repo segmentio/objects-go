@@ -17,7 +17,7 @@ func newBuffer(collection string) *buffer {
 	return &buffer{
 		collection:      collection,
 		Channel:         make(chan *Object, 100),
-		Exit:            make(chan struct{}, 1),
+		Exit:            make(chan struct{}),
 		buf:             [][]byte{},
 		currentByteSize: 0,
 	}
