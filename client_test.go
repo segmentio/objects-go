@@ -82,7 +82,7 @@ func (c *ClientTestSuite) TestSetFull() {
 
 	c.Equal(1, client.cmap.Count())
 
-	client.Close()
+	c.NoError(client.Close())
 
 	c.Len(c.httpRequests, 1)
 	c.Equal("c", c.httpRequests[0].Collection)

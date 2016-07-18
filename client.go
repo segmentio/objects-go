@@ -69,7 +69,7 @@ func (c *Client) fetchFunction(key string) *buffer {
 }
 
 func (c *Client) flush(b *buffer) {
-	if b.size() == 0 {
+	if b.count() == 0 {
 		return
 	}
 
@@ -126,20 +126,21 @@ func (c *Client) buffer(b *buffer) {
 
 }
 
-func (c *Client) Close() {
+func (c *Client) Close() error {
 	if !atomic.CompareAndSwapInt64(&c.closed, 0, 1) {
-		return
+		return ErrClientClosed
 	}
 
 	for t := range c.cmap.Iter() {
 		t.Val.Exit <- struct{}{}
 		close(t.Val.Exit)
 		close(t.Val.Channel)
-		t.Val.reset()
 	}
 
 	c.wg.Wait()
 	c.semaphore.Wait()
+
+	return nil
 }
 
 func (c *Client) Set(v *Object) error {
