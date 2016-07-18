@@ -127,10 +127,9 @@ func (c *Client) buffer(b *buffer) {
 }
 
 func (c *Client) Close() {
-	if atomic.LoadInt64(&c.closed) == 1 {
+	if !atomic.CompareAndSwapInt64(&c.closed, 0, 1) {
 		return
 	}
-	atomic.AddInt64(&c.closed, 1)
 
 	for t := range c.cmap.Iter() {
 		t.Val.Exit <- struct{}{}
