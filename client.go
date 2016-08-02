@@ -94,7 +94,9 @@ func (c *Client) buffer(b *buffer) {
 	for {
 		select {
 		case req := <-b.Channel:
-			req.Properties = tableize.Tableize(req.Properties)
+			req.Properties = tableize.Tableize(&tableize.Input{
+				Value: req.Properties,
+			})
 			x, err := json.Marshal(req)
 			if err != nil {
 				log.Printf("[Error] Message `%s` excluded from batch: %v", req.ID, err)
@@ -108,7 +110,9 @@ func (c *Client) buffer(b *buffer) {
 			c.flush(b)
 		case <-b.Exit:
 			for req := range b.Channel {
-				req.Properties = tableize.Tableize(req.Properties)
+				req.Properties = tableize.Tableize(&tableize.Input{
+					Value: req.Properties,
+				})
 				x, err := json.Marshal(req)
 				if err != nil {
 					log.Printf("[Error] Message `%s` excluded from batch: %v", req.ID, err)
