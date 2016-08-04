@@ -183,7 +183,8 @@ func (c *Client) makeRequest(request *batch) {
 		dec.Decode(&response)
 
 		if resp.StatusCode != http.StatusOK {
-			return fmt.Errorf("HTTP Post Request Failed, Status Code %d: %v", resp.StatusCode, response)
+			return fmt.Errorf("HTTP Post Request Failed, Status Code %d. \nResponse: %v \nRequest payload: %v",
+					resp.StatusCode, response, string(payload))
 		}
 
 		return nil
