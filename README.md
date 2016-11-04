@@ -10,7 +10,7 @@ The Objects API lets you `set` custom objects in your own data warehouse.
 
 ```go
 // First call to Set
-Client.Set(*objects.Object{
+Client.Set(&objects.Object{
   ID: "room1000",
   Collection: "rooms"
   Properties: map[string]interface{}{
@@ -27,6 +27,9 @@ Client.Set(*objects.Object{
     "owner": "Calvin",
     "public_listing": true,
 })
+
+// Make sure objects are flushed before your main goroutine exits
+Client.Close()
 ```
 
 This call makes the objects available in your data warehouse…
