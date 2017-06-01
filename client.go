@@ -171,7 +171,7 @@ func (c *Client) makeRequest(request *batch) {
 	b := backoff.NewExponentialBackOff()
 	b.MaxElapsedTime = 10 * time.Second
 	err = backoff.Retry(func() error {
-	  bodyReader := bytes.NewReader(payload)
+		bodyReader := bytes.NewReader(payload)
 		resp, err := http.Post(c.BaseEndpoint+"/v1/set", "application/json", bodyReader)
 		if err != nil {
 			return err
