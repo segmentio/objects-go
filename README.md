@@ -1,7 +1,6 @@
 # objects-go
 
-  Segment objects client for Go. For additional documentation
-  visit [https://segment.com/docs/libraries/go](https://segment.com/docs/libraries/go/) or view the [godocs](http://godoc.org/github.com/segmentio/objects-go).
+  Segment objects client for Go. For additional documentation view the [godocs](http://godoc.org/github.com/segmentio/objects-go). For documentation about our Go analytics library, visit [here](https://segment.com/docs/libraries/go).
 
 ## Description
 Segment’s Objects API allows you to send stateful business objects right to Redshift and other Segment supported data warehouses. These objects can be anything that is relevant to your business: products in your product catalogs, partners on your platform, articles on your blog, etc.
