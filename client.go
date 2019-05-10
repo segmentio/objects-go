@@ -31,7 +31,7 @@ var (
 	ErrClientClosed = errors.New("Client is closed")
 )
 
-type Client struct {
+type Config struct {
 	BaseEndpoint string
 	Logger       *log.Logger
 	Client       *http.Client
@@ -39,7 +39,10 @@ type Client struct {
 	MaxBatchBytes    int
 	MaxBatchCount    int
 	MaxBatchInterval time.Duration
+}
 
+type Client struct {
+	Config
 	writeKey  string
 	wg        sync.WaitGroup
 	semaphore semaphore.Semaphore
@@ -48,17 +51,45 @@ type Client struct {
 }
 
 func New(writeKey string) *Client {
+	return NewWithConfig(writeKey, Config{})
+}
+
+func NewWithConfig(writeKey string, config Config) *Client {
+	conf := getFinalConfig(config)
 	return &Client{
-		BaseEndpoint:     DefaultBaseEndpoint,
-		Logger:           log.New(os.Stderr, "segment ", log.LstdFlags),
-		writeKey:         writeKey,
-		Client:           http.DefaultClient,
-		cmap:             newConcurrentMap(),
-		MaxBatchBytes:    500 << 10,
-		MaxBatchCount:    100,
-		MaxBatchInterval: 10 * time.Second,
-		semaphore:        make(semaphore.Semaphore, 10),
+		Config:    conf,
+		writeKey:  writeKey,
+		cmap:      newConcurrentMap(),
+		semaphore: make(semaphore.Semaphore, 10),
 	}
+}
+
+func getFinalConfig(c Config) Config {
+	if c.BaseEndpoint == "" {
+		c.BaseEndpoint = DefaultBaseEndpoint
+	}
+
+	if c.Logger == nil {
+		c.Logger = log.New(os.Stderr, "segment ", log.LstdFlags)
+	}
+
+	if c.Client == nil {
+		c.Client = http.DefaultClient
+	}
+
+	if c.MaxBatchBytes <= 0 {
+		c.MaxBatchBytes = 500 << 10
+	}
+
+	if c.MaxBatchCount <= 0 {
+		c.MaxBatchCount = 100
+	}
+
+	if c.MaxBatchInterval <= 0 {
+		c.MaxBatchInterval = 10 * time.Second
+	}
+
+	return c
 }
 
 func (c *Client) fetchFunction(key string) *buffer {
@@ -167,7 +198,6 @@ func (c *Client) makeRequest(request *batch) {
 		return
 	}
 
-
 	b := backoff.NewExponentialBackOff()
 	b.MaxElapsedTime = 10 * time.Second
 	err = backoff.Retry(func() error {
@@ -184,7 +214,7 @@ func (c *Client) makeRequest(request *batch) {
 
 		if resp.StatusCode != http.StatusOK {
 			return fmt.Errorf("HTTP Post Request Failed, Status Code %d. \nResponse: %v \nRequest payload: %v",
-					resp.StatusCode, response, string(payload))
+				resp.StatusCode, response, string(payload))
 		}
 
 		return nil
