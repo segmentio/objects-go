@@ -25,6 +25,9 @@ const (
 
 	// Endpoint for Segment Objects API.
 	DefaultBaseEndpoint = "https://objects.segment.com"
+
+	// Default source
+	DefaultSource = "project"
 )
 
 var (
@@ -35,6 +38,8 @@ type Config struct {
 	BaseEndpoint string
 	Logger       *log.Logger
 	Client       *http.Client
+
+	Source string
 
 	MaxBatchBytes    int
 	MaxBatchCount    int
@@ -89,6 +94,10 @@ func getFinalConfig(c Config) Config {
 		c.MaxBatchInterval = 10 * time.Second
 	}
 
+	if c.Source == "" {
+		c.Source = DefaultSource
+	}
+
 	return c
 }
 
@@ -107,6 +116,7 @@ func (c *Client) flush(b *buffer) {
 	rm := b.marshalArray()
 	c.semaphore.Run(func() {
 		batchRequest := &batch{
+			Source:     c.Source,
 			Collection: b.collection,
 			WriteKey:   c.writeKey,
 			Objects:    rm,
