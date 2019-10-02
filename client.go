@@ -126,7 +126,7 @@ func (c *Client) flush(b *buffer) {
 
 		err := c.makeRequest(batchRequest)
 		if c.PrintErrors {
-			log.Printf("[ERROR] Batch failed making request, %v", err)
+			log.Printf("[ERROR] Batch failed making request: %v", err)
 		}
 	})
 	b.reset()
@@ -164,7 +164,7 @@ func (c *Client) buffer(b *buffer) {
 				x, err := json.Marshal(req)
 				if err != nil {
 					if c.PrintErrors {
-						log.Printf("[Error] Message `%s` excluded from batch: %v", req.ID, err)
+						log.Printf("[Error] Exiting: Message `%s` excluded from batch: %v", req.ID, err)
 					}
 					continue
 				}
