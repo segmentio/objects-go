@@ -1,4 +1,10 @@
 
+v1.0.0-webhookfn / 2019-10-01
+=============================
+
+  * update message
+  * hide sensitive payload request. support PrintErrors using Config
+
 v0.0.2-webhookfn / 2019-08-30
 =============================
 
