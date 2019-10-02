@@ -44,6 +44,8 @@ type Config struct {
 	MaxBatchBytes    int
 	MaxBatchCount    int
 	MaxBatchInterval time.Duration
+
+	PrintErrors bool
 }
 
 type Client struct {
@@ -122,7 +124,10 @@ func (c *Client) flush(b *buffer) {
 			Objects:    rm,
 		}
 
-		c.makeRequest(batchRequest)
+		err := c.makeRequest(batchRequest)
+		if c.PrintErrors {
+			log.Printf("[ERROR] Batch failed making request, %v", err)
+		}
 	})
 	b.reset()
 }
@@ -140,7 +145,9 @@ func (c *Client) buffer(b *buffer) {
 			})
 			x, err := json.Marshal(req)
 			if err != nil {
-				log.Printf("[Error] Message `%s` excluded from batch: %v", req.ID, err)
+				if c.PrintErrors {
+					log.Printf("[Error] Message `%s` excluded from batch: %v", req.ID, err)
+				}
 				continue
 			}
 			if b.size()+len(x) >= c.MaxBatchBytes || b.count()+1 >= c.MaxBatchCount {
@@ -156,7 +163,9 @@ func (c *Client) buffer(b *buffer) {
 				})
 				x, err := json.Marshal(req)
 				if err != nil {
-					log.Printf("[Error] Message `%s` excluded from batch: %v", req.ID, err)
+					if c.PrintErrors {
+						log.Printf("[Error] Message `%s` excluded from batch: %v", req.ID, err)
+					}
 					continue
 				}
 				if b.size()+len(x) >= c.MaxBatchBytes || b.count()+1 >= c.MaxBatchCount {
@@ -201,11 +210,10 @@ func (c *Client) Set(v *Object) error {
 	return nil
 }
 
-func (c *Client) makeRequest(request *batch) {
+func (c *Client) makeRequest(request *batch) error {
 	payload, err := json.Marshal(request)
 	if err != nil {
-		log.Printf("[Error] Batch failed to marshal: %v - %v", request, err)
-		return
+		return err
 	}
 
 	b := backoff.NewExponentialBackOff()
@@ -223,15 +231,12 @@ func (c *Client) makeRequest(request *batch) {
 		dec.Decode(&response)
 
 		if resp.StatusCode != http.StatusOK {
-			return fmt.Errorf("HTTP Post Request Failed, Status Code %d. \nResponse: %v \nRequest payload: %v",
-				resp.StatusCode, response, string(payload))
+			return fmt.Errorf("HTTP Post Request Failed, Status Code %d. \nResponse: %v",
+				resp.StatusCode, response)
 		}
 
 		return nil
 	}, b)
 
-	if err != nil {
-		log.Printf("[Error] %v", err)
-		return
-	}
+	return err
 }
