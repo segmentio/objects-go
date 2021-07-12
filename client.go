@@ -62,16 +62,15 @@ func New(writeKey string) *Client {
 }
 
 func NewWithConfig(writeKey string, config Config) *Client {
-	conf := getFinalConfig(config)
 	return &Client{
-		Config:    conf,
+		Config:    withDefaults(config),
 		writeKey:  writeKey,
 		cmap:      newConcurrentMap(),
 		semaphore: make(semaphore.Semaphore, 10),
 	}
 }
 
-func getFinalConfig(c Config) Config {
+func withDefaults(c Config) Config {
 	if c.BaseEndpoint == "" {
 		c.BaseEndpoint = DefaultBaseEndpoint
 	}
