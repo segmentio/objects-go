@@ -167,7 +167,6 @@ func (c *Client) makeRequest(request *batch) {
 		return
 	}
 
-
 	b := backoff.NewExponentialBackOff()
 	b.MaxElapsedTime = 10 * time.Second
 	err = backoff.Retry(func() error {
@@ -184,7 +183,7 @@ func (c *Client) makeRequest(request *batch) {
 
 		if resp.StatusCode != http.StatusOK {
 			return fmt.Errorf("HTTP Post Request Failed, Status Code %d. \nResponse: %v \nRequest payload: %v",
-					resp.StatusCode, response, string(payload))
+				resp.StatusCode, response, string(payload))
 		}
 
 		return nil
