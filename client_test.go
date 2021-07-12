@@ -58,6 +58,7 @@ func (c *ClientTestSuite) TestNewClient() {
 	c.NotNil(client.Logger)
 	c.NotNil(client.semaphore)
 	c.NotNil(client.wg)
+	c.NotNil(client.Source)
 	c.Equal("writeKey", client.writeKey)
 	c.Equal(0, client.cmap.Count())
 }
