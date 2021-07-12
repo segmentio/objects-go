@@ -90,6 +90,7 @@ func (c *Client) buffer(b *buffer) {
 	defer c.wg.Done()
 
 	tick := time.NewTicker(c.MaxBatchInterval)
+	defer tick.Stop()
 
 	for {
 		select {
